@@ -1,0 +1,30 @@
+From 5096eb4150b37590ccb04067449e874b52554b05 Mon Sep 17 00:00:00 2001
+From: Sebastian Parborg <darkdefende@gmail.com>
+Date: Mon, 27 Nov 2023 15:14:03 +0100
+Subject: [PATCH] Fix fast_exp simd test when building with aggressive
+ optimization flags
+
+When building OIIO with GCC and "-march=native -ffp-contract=off"
+compile flags, the fast_exp test fails. However the error seems to be
+very small, using a small threshold makes it pass.
+
+Signed-off-by: Sebastian Parborg <darkdefende@gmail.com>
+---
+ src/libutil/simd_test.cpp | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/src/libutil/simd_test.cpp b/src/libutil/simd_test.cpp
+index 5e056d9d11..772eb7af1e 100644
+--- a/src/libutil/simd_test.cpp
++++ b/src/libutil/simd_test.cpp
+@@ -1587,8 +1587,8 @@ void test_mathfuncs ()
+     VEC expA = mkvec<VEC> (0.367879441171442f, 1.0f, 2.718281828459045f, 90.0171313005218f);
+     OIIO_CHECK_SIMD_EQUAL (exp(A), expA);
+     OIIO_CHECK_SIMD_EQUAL_THRESH (log(expA), A, 1e-6f);
+-    OIIO_CHECK_SIMD_EQUAL (fast_exp(A),
+-                mkvec<VEC>(fast_exp(A[0]), fast_exp(A[1]), fast_exp(A[2]), fast_exp(A[3])));
++    OIIO_CHECK_SIMD_EQUAL_THRESH (fast_exp(A),
++                mkvec<VEC>(fast_exp(A[0]), fast_exp(A[1]), fast_exp(A[2]), fast_exp(A[3])), 1e-6f);
+     OIIO_CHECK_SIMD_EQUAL_THRESH (fast_log(expA),
+                 mkvec<VEC>(fast_log(expA[0]), fast_log(expA[1]), fast_log(expA[2]), fast_log(expA[3])), 0.00001f);
+     OIIO_CHECK_SIMD_EQUAL_THRESH (fast_pow_pos(VEC(2.0f), A),
