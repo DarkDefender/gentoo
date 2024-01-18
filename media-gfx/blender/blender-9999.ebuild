@@ -36,13 +36,13 @@ RESTRICT="!test? ( test )"
 REQUIRED_USE="${PYTHON_REQUIRED_USE}
 	alembic? ( openexr )
 	cuda? ( cycles )
-	cycles? ( openexr tiff )
+	cycles? ( openexr tiff tbb )
 	fluid? ( tbb )
 	hip? ( cycles )
 	nanovdb? ( openvdb )
-	openvdb? ( tbb )
+	openvdb? ( tbb openexr )
 	optix? ( cuda )
-	osl? ( cycles )
+	osl? ( cycles pugixml )
 	test? ( color-management )"
 
 # Library versions for official builds can be found in the blender source directory in:
@@ -266,7 +266,6 @@ src_configure() {
 		-DWITH_FFTW3=$(usex fftw)
 		-DWITH_GHOST_WAYLAND=$(usex wayland)
 		-DWITH_GHOST_WAYLAND_APP_ID="blender-${BV}"
-		-DWITH_GHOST_WAYLAND_DBUS=$(usex wayland)
 		-DWITH_GHOST_WAYLAND_DYNLOAD=no
 		-DWITH_GHOST_WAYLAND_LIBDECOR=no
 		-DWITH_GHOST_X11=$(usex X)
@@ -304,6 +303,7 @@ src_configure() {
 		-DWITH_PYTHON_INSTALL_ZSTANDARD=no
 		-DWITH_SDL=$(usex sdl)
 		-DWITH_STATIC_LIBS=no
+		-DWITH_STRICT_BUILD_OPTIONS=yes
 		-DWITH_SYSTEM_EIGEN3=yes
 		-DWITH_SYSTEM_FREETYPE=yes
 		-DWITH_SYSTEM_LZO=yes
